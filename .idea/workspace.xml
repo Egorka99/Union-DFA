@@ -34,7 +34,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.DFABuilder">
+    <configuration name="DFABuilder" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="DFABuilder" />
+      <module name="union-dfa" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="HelloWorld" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="HelloWorld" />
       <module name="union-dfa" />
@@ -44,8 +51,17 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.DFABuilder" />
         <item itemvalue="Application.HelloWorld" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="dfa.getTransitionTable()" />
+        <watch expression="((HashMap)dfa.getTransitionTable()).entrySet().toArray()[1]" custom="java.util.HashMap" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
