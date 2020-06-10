@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class DFA {
     private List<Character> alphabet;
@@ -36,4 +35,6 @@ public class DFA {
     public Map<Map.Entry<String, Character>, String> getTransitionTable() {
         return transitionTable;
     }
+
+
 }

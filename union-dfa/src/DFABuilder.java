@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DFABuilder {
     private DFA firstDfa;
@@ -13,28 +11,55 @@ public class DFABuilder {
     }
 
     public DFA build() {
-        return null;
+        return removeUnreachableStates(multiplyDFA());
     }
 
-    private static DFA multiplyDFA(DFA firstMultiplier, DFA secondMultiplier) {
-        List<Character> alphabet = firstMultiplier.getAlphabet();
+    private DFA removeUnreachableStates(DFA unionDfa) {
+        List<String> reachableStates = new ArrayList<>(List.of(unionDfa.getStates().get(0)));
+        List<String> newStates = new ArrayList<>(List.of(unionDfa.getStates().get(0)));
+
+        do {
+            List<String> temp = new ArrayList<>();
+            for (String q : newStates) {
+                for (Character c : unionDfa.getAlphabet()) {
+                    temp.add(unionDfa.getTransitionTable().get(Map.entry(q, c)));
+                }
+            }
+            newStates.addAll(temp);
+            newStates.removeAll(reachableStates);
+            reachableStates.addAll(newStates);
+        } while (newStates.size() != 0);
+
+        List<String> unreachableStates = unionDfa.getStates().stream().filter(s -> !reachableStates.contains(s)).collect(Collectors.toList());
+
+        List<String> newDfaStates =  unionDfa.getStates().stream().filter(s -> !unreachableStates.contains(s)).collect(Collectors.toList());
+        List<String> newDfaFinalStates =  unionDfa.getStates().stream().filter(s -> !unreachableStates.contains(s)).collect(Collectors.toList());
+        Set<Map.Entry<Map.Entry<String, Character>, String>> newDfaTransitionsEntrySet = unionDfa.getTransitionTable().entrySet().stream()
+                .filter(e -> !unreachableStates.contains(e.getKey().getKey())).collect(Collectors.toSet());
+        Map<Map.Entry<String, Character>, String> newDfaTransitions = newDfaTransitionsEntrySet.stream().collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+
+        return new DFA(unionDfa.getAlphabet(),newDfaStates,unionDfa.getStartState(),newDfaFinalStates, newDfaTransitions);
+    }
+
+    private DFA multiplyDFA() {
+        List<Character> alphabet = firstDfa.getAlphabet();
         List<String> states = new ArrayList<>();
         List<String[]> statesArray = new ArrayList<>();
         List<String> finalStates = new ArrayList<>();
         String startState;
         Map<Map.Entry<String, Character>, String> transitionTable = new HashMap<>();
 
-        for (String firstDfaState : firstMultiplier.getStates()) {
-            for (String secondDfaState : secondMultiplier.getStates()) {
+        for (String firstDfaState : firstDfa.getStates()) {
+            for (String secondDfaState : secondDfa.getStates()) {
                 String newState = "(" + firstDfaState + " , " + secondDfaState + ")";
                 statesArray.add(new String[]{firstDfaState, secondDfaState});
                 states.add(newState);
             }
         }
-        startState = "(" + firstMultiplier.getStartState() + " , " + secondMultiplier.getStartState() + ")";
+        startState = "(" + firstDfa.getStartState() + " , " + secondDfa.getStartState() + ")";
 
-        for (String firstDfaFinalState : firstMultiplier.getFinalStates()) {
-            for (String secondDfaFinalState : secondMultiplier.getFinalStates()) {
+        for (String firstDfaFinalState : firstDfa.getFinalStates()) {
+            for (String secondDfaFinalState : secondDfa.getFinalStates()) {
                 String newFinalState = "(" + firstDfaFinalState + " , " + secondDfaFinalState + ")";
                 finalStates.add(newFinalState);
             }
@@ -43,8 +68,8 @@ public class DFABuilder {
         for (int i = 0; i < statesArray.size(); i++) {
             for (Character symbol : alphabet) {
                 Map.Entry funcParam = Map.entry(states.get(i), symbol);
-                String funcValue = "(" + firstMultiplier.getTransitionTable().get(Map.entry(statesArray.get(i)[0], symbol)) + " , " +
-                        secondMultiplier.getTransitionTable().get(Map.entry(statesArray.get(i)[1], symbol)) + ")";
+                String funcValue = "(" + firstDfa.getTransitionTable().get(Map.entry(statesArray.get(i)[0], symbol)) + " , " +
+                        secondDfa.getTransitionTable().get(Map.entry(statesArray.get(i)[1], symbol)) + ")";
                 transitionTable.put(funcParam, funcValue);
             }
         }
@@ -72,7 +97,10 @@ public class DFABuilder {
                         Map.entry("p2", 'b'), "p2"
                 ));
 
-        DFA dfa = multiplyDFA(firstDfa, secondDfa);
+        DFABuilder dfaBuilder = new DFABuilder(firstDfa, secondDfa);
+        DFA dfa = dfaBuilder.multiplyDFA();
+        dfa = dfaBuilder.removeUnreachableStates(dfa);
+
         System.out.println("Alphabet: ");
         dfa.getAlphabet().forEach(System.out::println);
         System.out.println("States: ");
@@ -81,7 +109,7 @@ public class DFABuilder {
         System.out.println("Final States:");
         dfa.getFinalStates().forEach(System.out::println);
         System.out.println("Transitions");
-        dfa.getTransitionTable().forEach((r,c) -> System.out.println(r.getKey() + " - " + r.getValue() + " : " + c));
+        dfa.getTransitionTable().forEach((r, c) -> System.out.println(r.getKey() + " - " + r.getValue() + " : " + c));
     }
 
 
