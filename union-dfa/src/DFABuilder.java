@@ -33,7 +33,7 @@ public class DFABuilder {
         List<String> unreachableStates = unionDfa.getStates().stream().filter(s -> !reachableStates.contains(s)).collect(Collectors.toList());
 
         List<String> newDfaStates =  unionDfa.getStates().stream().filter(s -> !unreachableStates.contains(s)).collect(Collectors.toList());
-        List<String> newDfaFinalStates =  unionDfa.getStates().stream().filter(s -> !unreachableStates.contains(s)).collect(Collectors.toList());
+        List<String> newDfaFinalStates =  unionDfa.getFinalStates().stream().filter(s -> !unreachableStates.contains(s)).collect(Collectors.toList());
         Set<Map.Entry<Map.Entry<String, Character>, String>> newDfaTransitionsEntrySet = unionDfa.getTransitionTable().entrySet().stream()
                 .filter(e -> !unreachableStates.contains(e.getKey().getKey())).collect(Collectors.toSet());
         Map<Map.Entry<String, Character>, String> newDfaTransitions = newDfaTransitionsEntrySet.stream().collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
@@ -79,22 +79,41 @@ public class DFABuilder {
     }
 
     public static void main(String[] args) {
-        DFA firstDfa = new DFA(List.of('a', 'b'), List.of("q0", "q1"), "p0", List.of("q0"),
+//        DFA firstDfa = new DFA(List.of('a', 'b'), List.of("q0", "q1"), "p0", List.of("q0"),
+//                Map.of(
+//                        Map.entry("q0", 'a'), "q1",
+//                        Map.entry("q0", 'b'), "q0",
+//                        Map.entry("q1", 'a'), "q0",
+//                        Map.entry("q1", 'b'), "q1"
+//
+//                ));
+//        DFA secondDfa = new DFA(List.of('a', 'b'), List.of("p0", "p1", "p2"), "p0", List.of("p2"),
+//                Map.of(
+//                        Map.entry("p0", 'a'), "p0",
+//                        Map.entry("p0", 'b'), "p1",
+//                        Map.entry("p1", 'a'), "p0",
+//                        Map.entry("p1", 'b'), "p2",
+//                        Map.entry("p2", 'a'), "p2",
+//                        Map.entry("p2", 'b'), "p2"
+//                ));
+        DFA firstDfa = new DFA(List.of('a', 'b'), List.of("s1", "t1"), "s1", List.of("t1"),
                 Map.of(
-                        Map.entry("q0", 'a'), "q1",
-                        Map.entry("q0", 'b'), "q0",
-                        Map.entry("q1", 'a'), "q0",
-                        Map.entry("q1", 'b'), "q1"
+                        Map.entry("s1", 'a'), "s1",
+                        Map.entry("s1", 'b'), "t1",
+                        Map.entry("t1", 'a'), "t1",
+                        Map.entry("t1", 'b'), "t1"
 
                 ));
-        DFA secondDfa = new DFA(List.of('a', 'b'), List.of("p0", "p1", "p2"), "p0", List.of("p2"),
+                DFA secondDfa = new DFA(List.of('a', 'b'), List.of("s2", "q2", "t21","t22"), "s2", List.of("t21","t22"),
                 Map.of(
-                        Map.entry("p0", 'a'), "p0",
-                        Map.entry("p0", 'b'), "p1",
-                        Map.entry("p1", 'a'), "p0",
-                        Map.entry("p1", 'b'), "p2",
-                        Map.entry("p2", 'a'), "p2",
-                        Map.entry("p2", 'b'), "p2"
+                        Map.entry("s2", 'b'), "s2",
+                        Map.entry("s2", 'a'), "q2",
+                        Map.entry("q2", 'a'), "q2",
+                        Map.entry("q2", 'b'), "t21",
+                        Map.entry("t21", 'a'), "t21",
+                        Map.entry("t21", 'b'), "t21",
+                        Map.entry("t22", 'a'), "t22",
+                        Map.entry("t22", 'b'), "t22"
                 ));
 
         DFABuilder dfaBuilder = new DFABuilder(firstDfa, secondDfa);
