@@ -1,8 +1,8 @@
 s2 q2 t21 t22
 a b
 s2
-8
 t21 t22
+8
 s2 b s2
 s2 a q2
 q2 a q2
