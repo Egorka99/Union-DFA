@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Union-DFA:jar">
+    <output-path>$PROJECT_DIR$/union-dfa/target/artifacts/Union_DFA_jar</output-path>
+    <root id="archive" name="Union-DFA.jar">
+      <element id="module-output" name="union-dfa" />
+    </root>
+  </artifact>
+</component>
