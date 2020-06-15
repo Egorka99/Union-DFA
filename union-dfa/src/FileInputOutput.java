@@ -5,8 +5,7 @@ import java.util.stream.Collectors;
 
 
 public class FileInputOutput {
-    public static DFA read(String filePath) throws IOException {
-        StringBuilder fileInput = new StringBuilder();
+    public static DFA read(String filePath) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
@@ -29,7 +28,7 @@ public class FileInputOutput {
         Map<Map.Entry<String, Character>, String> transitionTable = new HashMap<>();
         for (int i = 0; i < countOfTransitions; i++) {
             String[] transitionArray = lines.get(5 + i).split(" ");
-            transitionTable.put(Map.entry(transitionArray[0], transitionArray[1].charAt(0)), transitionArray[2]);
+            transitionTable.put(new AbstractMap.SimpleEntry(transitionArray[0], transitionArray[1].charAt(0)), transitionArray[2]);
         }
 
         return new DFA(alphabet, states, startState, finalStates, transitionTable);

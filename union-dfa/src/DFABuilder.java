@@ -15,14 +15,16 @@ public class DFABuilder {
     }
 
     private DFA removeUnreachableStates(DFA unionDfa) {
-        List<String> reachableStates = new ArrayList<>(List.of(unionDfa.getStates().get(0)));
-        List<String> newStates = new ArrayList<>(List.of(unionDfa.getStates().get(0)));
+        List<String> reachableStates = new ArrayList<>();
+        reachableStates.add(unionDfa.getStates().get(0));
+        List<String> newStates = new ArrayList<>();
+        newStates.add(unionDfa.getStates().get(0));
 
         do {
             List<String> temp = new ArrayList<>();
             for (String q : newStates) {
                 for (Character c : unionDfa.getAlphabet()) {
-                    temp.add(unionDfa.getTransitionTable().get(Map.entry(q, c)));
+                    temp.add(unionDfa.getTransitionTable().get(new AbstractMap.SimpleEntry(q, c)));
                 }
             }
             newStates.addAll(temp);
@@ -67,9 +69,9 @@ public class DFABuilder {
 
         for (int i = 0; i < statesArray.size(); i++) {
             for (Character symbol : alphabet) {
-                Map.Entry funcParam = Map.entry(states.get(i), symbol);
-                String funcValue = "(" + firstDfa.getTransitionTable().get(Map.entry(statesArray.get(i)[0], symbol)) + " , " +
-                        secondDfa.getTransitionTable().get(Map.entry(statesArray.get(i)[1], symbol)) + ")";
+                Map.Entry funcParam = new AbstractMap.SimpleEntry(states.get(i), symbol);
+                String funcValue = "(" + firstDfa.getTransitionTable().get(new AbstractMap.SimpleEntry(statesArray.get(i)[0], symbol)) + " , " +
+                        secondDfa.getTransitionTable().get(new AbstractMap.SimpleEntry(statesArray.get(i)[1], symbol)) + ")";
                 transitionTable.put(funcParam, funcValue);
             }
         }
@@ -78,58 +80,6 @@ public class DFABuilder {
 
     }
 
-    public static void main(String[] args) {
-//        DFA firstDfa = new DFA(List.of('a', 'b'), List.of("q0", "q1"), "q0", List.of("q0"),
-//                Map.of(
-//                        Map.entry("q0", 'a'), "q1",
-//                        Map.entry("q0", 'b'), "q0",
-//                        Map.entry("q1", 'a'), "q0",
-//                        Map.entry("q1", 'b'), "q1"
-//
-//                ));
-//        DFA secondDfa = new DFA(List.of('a', 'b'), List.of("p0", "p1", "p2"), "p0", List.of("p2"),
-//                Map.of(
-//                        Map.entry("p0", 'a'), "p0",
-//                        Map.entry("p0", 'b'), "p1",
-//                        Map.entry("p1", 'a'), "p0",
-//                        Map.entry("p1", 'b'), "p2",
-//                        Map.entry("p2", 'a'), "p2",
-//                        Map.entry("p2", 'b'), "p2"
-//                ));
-        DFA firstDfa = new DFA(List.of('a', 'b'), List.of("s1", "t1"), "s1", List.of("t1"),
-                Map.of(
-                        Map.entry("s1", 'a'), "s1",
-                        Map.entry("s1", 'b'), "t1",
-                        Map.entry("t1", 'a'), "t1",
-                        Map.entry("t1", 'b'), "t1"
-
-                ));
-        DFA secondDfa = new DFA(List.of('a', 'b'), List.of("s2", "q2", "t21", "t22"), "s2", List.of("t21", "t22"),
-                Map.of(
-                        Map.entry("s2", 'b'), "s2",
-                        Map.entry("s2", 'a'), "q2",
-                        Map.entry("q2", 'a'), "q2",
-                        Map.entry("q2", 'b'), "t21",
-                        Map.entry("t21", 'a'), "t21",
-                        Map.entry("t21", 'b'), "t21",
-                        Map.entry("t22", 'a'), "t22",
-                        Map.entry("t22", 'b'), "t22"
-                ));
-
-        DFABuilder dfaBuilder = new DFABuilder(firstDfa, secondDfa);
-        DFA dfa = dfaBuilder.multiplyDFA();
-        dfa = dfaBuilder.removeUnreachableStates(dfa);
-
-        System.out.println("Alphabet: ");
-        dfa.getAlphabet().forEach(System.out::println);
-        System.out.println("States: ");
-        dfa.getStates().forEach(System.out::println);
-        System.out.println("Initial State: " + dfa.getStartState());
-        System.out.println("Final States:");
-        dfa.getFinalStates().forEach(System.out::println);
-        System.out.println("Transitions");
-        dfa.getTransitionTable().forEach((r, c) -> System.out.println(r.getKey() + " - " + r.getValue() + " : " + c));
-    }
 
 
 }
